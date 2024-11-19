@@ -1,0 +1,150 @@
+<!-- Cute Cat SVG with Animations -->
+<style>
+    @keyframes blinkEyes {
+        0%, 100% { transform: scaleY(1); }
+        49% { transform: scaleY(1); }
+        50% { transform: scaleY(0.1); }
+        51% { transform: scaleY(1); }
+    }
+
+    @keyframes moveWhiskers {
+        0% { transform: rotate(0deg); }
+        25% { transform: rotate(2deg); }
+        75% { transform: rotate(-2deg); }
+        100% { transform: rotate(0deg); }
+    }
+
+    @keyframes moveTail {
+        0% { transform: rotate(-5deg); }
+        50% { transform: rotate(5deg); }
+        100% { transform: rotate(-5deg); }
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .cat-container {
+        width: 400px;
+        height: 400px;
+        margin: 50px auto;
+        animation: bounce 3s ease-in-out infinite;
+    }
+
+    .cat-eyes {
+        animation: blinkEyes 4s infinite;
+    }
+
+    .cat-whiskers {
+        animation: moveWhiskers 3s ease-in-out infinite;
+    }
+
+    .cat-tail {
+        animation: moveTail 2s ease-in-out infinite;
+    }
+
+    .sparkle {
+        opacity: 0;
+        animation: sparkle 2s infinite;
+    }
+
+    @keyframes sparkle {
+        0% { opacity: 0; transform: scale(0.5); }
+        50% { opacity: 1; transform: scale(1.2); }
+        100% { opacity: 0; transform: scale(0.5); }
+    }
+</style>
+
+<div class="cat-container">
+    <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+        <!-- Background Circle -->
+        <circle cx="200" cy="200" r="180" fill="#FFE5EC" />
+        
+        <!-- Cat Body -->
+        <ellipse cx="200" cy="220" rx="120" ry="100" fill="#FFA7C4" />
+        
+        <!-- Cat Head -->
+        <circle cx="200" cy="160" r="80" fill="#FFA7C4" />
+        
+        <!-- Ears -->
+        <path d="M140 100 L120 40 L160 80 Z" fill="#FFA7C4" />
+        <path d="M260 100 L280 40 L240 80 Z" fill="#FFA7C4" />
+        <path d="M145 95 L130 45 L165 80 Z" fill="#FFD1DC" />
+        <path d="M255 95 L270 45 L235 80 Z" fill="#FFD1DC" />
+        
+        <!-- Eyes Group -->
+        <g class="cat-eyes">
+            <!-- Left Eye -->
+            <circle cx="160" cy="150" r="15" fill="#000000" />
+            <circle cx="165" cy="145" r="5" fill="#FFFFFF" />
+            
+            <!-- Right Eye -->
+            <circle cx="240" cy="150" r="15" fill="#000000" />
+            <circle cx="245" cy="145" r="5" fill="#FFFFFF" />
+        </g>
+        
+        <!-- Nose -->
+        <path d="M195 170 L205 170 L200 180 Z" fill="#FFB7B7" />
+        
+        <!-- Mouth -->
+        <path d="M180 190 Q200 200 220 190" fill="none" stroke="#000000" stroke-width="2" />
+        
+        <!-- Whiskers Group -->
+        <g class="cat-whiskers">
+            <!-- Left Whiskers -->
+            <line x1="140" y1="180" x2="80" y2="170" stroke="#000000" stroke-width="2" />
+            <line x1="140" y1="185" x2="80" y2="185" stroke="#000000" stroke-width="2" />
+            <line x1="140" y1="190" x2="80" y2="200" stroke="#000000" stroke-width="2" />
+            
+            <!-- Right Whiskers -->
+            <line x1="260" y1="180" x2="320" y2="170" stroke="#000000" stroke-width="2" />
+            <line x1="260" y1="185" x2="320" y2="185" stroke="#000000" stroke-width="2" />
+            <line x1="260" y1="190" x2="320" y2="200" stroke="#000000" stroke-width="2" />
+        </g>
+        
+        <!-- Tail -->
+        <path class="cat-tail" d="M320 220 Q340 180 360 220" fill="none" stroke="#FFA7C4" stroke-width="20" stroke-linecap="round" />
+        
+        <!-- Paws -->
+        <ellipse cx="150" cy="320" rx="25" ry="15" fill="#FFB7B7" />
+        <ellipse cx="250" cy="320" rx="25" ry="15" fill="#FFB7B7" />
+        
+        <!-- Sparkles -->
+        <g class="sparkle">
+            <path d="M100 100 L110 110 L100 120 L90 110 Z" fill="#FFD700" />
+            <path d="M300 100 L310 110 L300 120 L290 110 Z" fill="#FFD700" />
+            <path d="M200 50 L210 60 L200 70 L190 60 Z" fill="#FFD700" />
+        </g>
+        
+        <!-- Blush -->
+        <circle cx="140" cy="180" r="15" fill="#FFB7B7" opacity="0.5" />
+        <circle cx="260" cy="180" r="15" fill="#FFB7B7" opacity="0.5" />
+    </svg>
+</div>
+
+<script>
+    // Add interactivity
+    document.querySelector('.cat-container').addEventListener('mouseover', function() {
+        this.style.transform = 'scale(1.1)';
+    });
+    
+    document.querySelector('.cat-container').addEventListener('mouseout', function() {
+        this.style.transform = 'scale(1)';
+    });
+    
+    // Random sparkle positions
+    function updateSparkles() {
+        const sparkles = document.querySelectorAll('.sparkle path');
+        sparkles.forEach(sparkle => {
+            const x = Math.random() * 300 + 50;
+            const y = Math.random() * 300 + 50;
+            sparkle.setAttribute('transform', `translate(${x-100},${y-100})`);
+        });
+    }
+    
+    setInterval(updateSparkles, 2000);
+</script>
+
+
+
