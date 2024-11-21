@@ -1,150 +1,551 @@
-<!-- Cute Cat SVG with Animations -->
-<style>
-    @keyframes blinkEyes {
-        0%, 100% { transform: scaleY(1); }
-        49% { transform: scaleY(1); }
-        50% { transform: scaleY(0.1); }
-        51% { transform: scaleY(1); }
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>g1-preview</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .step-container {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s ease-out forwards;
+        }
 
-    @keyframes moveWhiskers {
-        0% { transform: rotate(0deg); }
-        25% { transform: rotate(2deg); }
-        75% { transform: rotate(-2deg); }
-        100% { transform: rotate(0deg); }
-    }
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    @keyframes moveTail {
-        0% { transform: rotate(-5deg); }
-        50% { transform: rotate(5deg); }
-        100% { transform: rotate(-5deg); }
-    }
+        .thinking-indicator {
+            display: inline-block;
+            animation: thinking 1.4s infinite;
+        }
 
-    @keyframes bounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
-    }
+        @keyframes thinking {
+            0%, 80%, 100% { opacity: 0.2; }
+            40% { opacity: 1; }
+        }
 
-    .cat-container {
-        width: 400px;
-        height: 400px;
-        margin: 50px auto;
-        animation: bounce 3s ease-in-out infinite;
-    }
+        .tool-result {
+            background: #f0f8ff;
+            border-left: 4px solid #4a90e2;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
 
-    .cat-eyes {
-        animation: blinkEyes 4s infinite;
-    }
+        .tool-result:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
 
-    .cat-whiskers {
-        animation: moveWhiskers 3s ease-in-out infinite;
-    }
+        .error-message {
+            background: #fff0f0;
+            border-left: 4px solid #e24a4a;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            animation: shake 0.5s ease-in-out;
+        }
 
-    .cat-tail {
-        animation: moveTail 2s ease-in-out infinite;
-    }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
 
-    .sparkle {
-        opacity: 0;
-        animation: sparkle 2s infinite;
-    }
+        .step-title {
+            position: relative;
+            padding-left: 24px;
+            transition: all 0.3s ease;
+        }
 
-    @keyframes sparkle {
-        0% { opacity: 0; transform: scale(0.5); }
-        50% { opacity: 1; transform: scale(1.2); }
-        100% { opacity: 0; transform: scale(0.5); }
-    }
-</style>
+        .step-title:hover {
+            color: #4a90e2;
+        }
 
-<div class="cat-container">
-    <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-        <!-- Background Circle -->
-        <circle cx="200" cy="200" r="180" fill="#FFE5EC" />
-        
-        <!-- Cat Body -->
-        <ellipse cx="200" cy="220" rx="120" ry="100" fill="#FFA7C4" />
-        
-        <!-- Cat Head -->
-        <circle cx="200" cy="160" r="80" fill="#FFA7C4" />
-        
-        <!-- Ears -->
-        <path d="M140 100 L120 40 L160 80 Z" fill="#FFA7C4" />
-        <path d="M260 100 L280 40 L240 80 Z" fill="#FFA7C4" />
-        <path d="M145 95 L130 45 L165 80 Z" fill="#FFD1DC" />
-        <path d="M255 95 L270 45 L235 80 Z" fill="#FFD1DC" />
-        
-        <!-- Eyes Group -->
-        <g class="cat-eyes">
-            <!-- Left Eye -->
-            <circle cx="160" cy="150" r="15" fill="#000000" />
-            <circle cx="165" cy="145" r="5" fill="#FFFFFF" />
+        .step-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 16px;
+            height: 16px;
+            background: #4a90e2;
+            border-radius: 50%;
+            transform: translateY(-50%);
+            transition: all 0.3s ease;
+        }
+
+        .step-title:hover::before {
+            transform: translateY(-50%) scale(1.2);
+            box-shadow: 0 0 10px rgba(74,144,226,0.5);
+        }
+
+        .step-content {
+            position: relative;
+            padding-left: 24px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .step-content::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #4a90e2;
+            transform-origin: top;
+            transition: transform 0.3s ease;
+        }
+
+        .step-content.collapsed {
+            height: 0;
+            opacity: 0;
+            overflow: hidden;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .collapse-button {
+            transition: transform 0.3s ease;
+        }
+
+        .collapse-button.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .collapse-all-button {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .collapse-all-button:hover {
+            background-color: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+            transform: translateY(-2px);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #4a90e2;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #357abd;
+        }
+
+        pre code {
+            border-radius: 8px;
+            padding: 1em;
+            background: #2d2d2d;
+            color: #f8f8f2;
+            overflow-x: auto;
+            transition: all 0.3s ease;
+        }
+
+        pre code:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .loading-dots::after {
+            content: '';
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { content: '.'; }
+            33% { content: '..'; }
+            66% { content: '...'; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8 transform hover:scale-[1.01] transition-transform">
+            <h1 class="text-4xl font-bold mb-2 text-gray-800 flex items-center gap-3">
+                <i class="fas fa-brain text-blue-500 hover:animate-bounce"></i>
+                g1-preview
+                <span class="text-sm font-normal bg-blue-100 text-blue-800 px-3 py-1 rounded-full">v2.0</span>
+            </h1>
             
-            <!-- Right Eye -->
-            <circle cx="240" cy="150" r="15" fill="#000000" />
-            <circle cx="245" cy="145" r="5" fill="#FFFFFF" />
-        </g>
-        
-        <!-- Nose -->
-        <path d="M195 170 L205 170 L200 180 Z" fill="#FFB7B7" />
-        
-        <!-- Mouth -->
-        <path d="M180 190 Q200 200 220 190" fill="none" stroke="#000000" stroke-width="2" />
-        
-        <!-- Whiskers Group -->
-        <g class="cat-whiskers">
-            <!-- Left Whiskers -->
-            <line x1="140" y1="180" x2="80" y2="170" stroke="#000000" stroke-width="2" />
-            <line x1="140" y1="185" x2="80" y2="185" stroke="#000000" stroke-width="2" />
-            <line x1="140" y1="190" x2="80" y2="200" stroke="#000000" stroke-width="2" />
-            
-            <!-- Right Whiskers -->
-            <line x1="260" y1="180" x2="320" y2="170" stroke="#000000" stroke-width="2" />
-            <line x1="260" y1="185" x2="320" y2="185" stroke="#000000" stroke-width="2" />
-            <line x1="260" y1="190" x2="320" y2="200" stroke="#000000" stroke-width="2" />
-        </g>
-        
-        <!-- Tail -->
-        <path class="cat-tail" d="M320 220 Q340 180 360 220" fill="none" stroke="#FFA7C4" stroke-width="20" stroke-linecap="round" />
-        
-        <!-- Paws -->
-        <ellipse cx="150" cy="320" rx="25" ry="15" fill="#FFB7B7" />
-        <ellipse cx="250" cy="320" rx="25" ry="15" fill="#FFB7B7" />
-        
-        <!-- Sparkles -->
-        <g class="sparkle">
-            <path d="M100 100 L110 110 L100 120 L90 110 Z" fill="#FFD700" />
-            <path d="M300 100 L310 110 L300 120 L290 110 Z" fill="#FFD700" />
-            <path d="M200 50 L210 60 L200 70 L190 60 Z" fill="#FFD700" />
-        </g>
-        
-        <!-- Blush -->
-        <circle cx="140" cy="180" r="15" fill="#FFB7B7" opacity="0.5" />
-        <circle cx="260" cy="180" r="15" fill="#FFB7B7" opacity="0.5" />
-    </svg>
-</div>
+            <p class="text-gray-600 mb-6 flex items-center gap-2">
+                <i class="fas fa-lightbulb text-yellow-400"></i>
+                Using 90b to create comprehensive step-by-step reasoning chains
+            </p>
+
+            <div class="mb-6">
+                <div class="flex gap-3">
+                    <div class="flex-1 relative">
+                        <input type="text" 
+                               id="queryInput" 
+                               class="w-full p-4 border-2 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pl-12 transition-all duration-300"
+                               placeholder="Enter your query here..."
+                               onkeypress="handleKeyPress(event)">
+                        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                    <button onclick="generateResponse()" 
+                            class="bg-blue-500 text-white px-8 py-4 rounded-lg hover:bg-blue-600 transition-all duration-300 flex items-center gap-3 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-paper-plane"></i>
+                        Generate
+                        <span class="text-xs bg-blue-600 px-2 py-1 rounded">Enter ↵</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between mb-6">
+                <button id="collapseAllButton" 
+                        onclick="toggleAllSteps()"
+                        class="collapse-all-button flex items-center gap-2 px-6 py-3 text-gray-600 rounded-lg border shadow-sm hover:shadow-md">
+                    <i class="fas fa-chevron-right"></i>
+                    <span id="collapseAllText">Expand All</span>
+                </button>
+
+                <div class="flex gap-3">
+                    <button onclick="clearResponses()" 
+                            class="text-gray-500 hover:text-red-500 transition-colors flex items-center gap-2">
+                        <i class="fas fa-trash-alt"></i>
+                        Clear
+                    </button>
+                    <button onclick="copyToClipboard()" 
+                            class="text-gray-500 hover:text-blue-500 transition-colors flex items-center gap-2">
+                        <i class="fas fa-copy"></i>
+                        Copy
+                    </button>
+                </div>
+            </div>
+
+            <div id="responseContainer" class="space-y-6"></div>
+            <div id="thinkingContainer" class="hidden">
+                <div class="flex items-center gap-3 text-gray-600 bg-blue-50 p-4 rounded-lg">
+                    <i class="fas fa-circle-notch fa-spin text-blue-500"></i>
+                    <span class="loading-dots">Thinking</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="fixed bottom-4 right-4 space-y-2"></div>
+</body>
+</html>
 
 <script>
-    // Add interactivity
-    document.querySelector('.cat-container').addEventListener('mouseover', function() {
-        this.style.transform = 'scale(1.1)';
-    });
+const GROQ_API_KEY = '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';
+const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+
+let currentStepCount = 0;
+let totalThinkingTime = 0;
+let isGenerating = false;
+let allCollapsed = true;
+
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `p-4 rounded-lg shadow-lg text-white flex items-center gap-2 transform translate-x-full transition-transform duration-300 ${
+        type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+    }`;
+    toast.innerHTML = `
+        <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        ${message}
+    `;
     
-    document.querySelector('.cat-container').addEventListener('mouseout', function() {
-        this.style.transform = 'scale(1)';
-    });
+    document.getElementById('toastContainer').appendChild(toast);
+    requestAnimationFrame(() => toast.style.transform = 'translateX(0)');
     
-    // Random sparkle positions
-    function updateSparkles() {
-        const sparkles = document.querySelectorAll('.sparkle path');
-        sparkles.forEach(sparkle => {
-            const x = Math.random() * 300 + 50;
-            const y = Math.random() * 300 + 50;
-            sparkle.setAttribute('transform', `translate(${x-100},${y-100})`);
-        });
+    setTimeout(() => {
+        toast.style.transform = 'translateX(full)';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+function clearResponses() {
+    const responseContainer = document.getElementById('responseContainer');
+    responseContainer.innerHTML = '';
+    currentStepCount = 0;
+    totalThinkingTime = 0;
+    showToast('Responses cleared');
+}
+
+async function copyToClipboard() {
+    const responseContainer = document.getElementById('responseContainer');
+    const textContent = responseContainer.innerText;
+    
+    try {
+        await navigator.clipboard.writeText(textContent);
+        showToast('Content copied to clipboard');
+    } catch (err) {
+        showToast('Failed to copy content', 'error');
     }
+}
+
+async function generateResponse() {
+    if (isGenerating) return;
     
-    setInterval(updateSparkles, 2000);
+    const queryInput = document.getElementById('queryInput');
+    const query = queryInput.value.trim();
+    
+    if (!query) return;
+    
+    isGenerating = true;
+    currentStepCount = 0;
+    totalThinkingTime = 0;
+    
+    const responseContainer = document.getElementById('responseContainer');
+    const thinkingContainer = document.getElementById('thinkingContainer');
+    
+    responseContainer.innerHTML = '';
+    thinkingContainer.classList.remove('hidden');
+    
+    const systemMessage = {
+        role: "system",
+        content: `You are an expert AI assistant that explains your reasoning step by step. For each step, provide a title that describes what you're doing in that step, along with the content. Decide if you need another step or if you're ready to give the final answer. Respond in JSON format with 'title', 'content', and 'next_action' (either 'continue' or 'final_answer') keys. USE AS MANY REASONING STEPS AS POSSIBLE. AT LEAST 6. BE AWARE OF YOUR LIMITATIONS AS AN LLM AND WHAT YOU CAN AND CANNOT DO. IN YOUR REASONING, INCLUDE EXPLORATION OF ALTERNATIVE ANSWERS. CONSIDER YOU MAY BE WRONG, AND IF YOU ARE WRONG IN YOUR REASONING, WHERE IT WOULD BE. FULLY TEST ALL OTHER POSSIBILITIES. YOU CAN BE WRONG. WHEN YOU SAY YOU ARE RE-EXAMINING, ACTUALLY RE-EXAMINE, AND USE ANOTHER APPROACH TO DO SO. DO NOT JUST SAY YOU ARE RE-EXAMINING. USE AT LEAST 5 METHODS TO DERIVE THE ANSWER. USE BEST PRACTICES. RESPOND SMART, SHORT AND CLEARLY TO OFFER THE BEST ASSISTANCE.`
+    };
+
+    const messages = [
+        systemMessage,
+        { role: "user", content: query },
+        { role: "assistant", content: "Thank you! I will now think step by step following my instructions, starting at the beginning after decomposing the problem" }
+    ];
+
+    try {
+        while (currentStepCount < 25) {
+            const startTime = performance.now();
+            const stepData = await makeGroqCall(messages, false);
+            const endTime = performance.now();
+            const thinkingTime = (endTime - startTime) / 1000;
+            totalThinkingTime += thinkingTime;
+
+            addStepToUI(stepData, thinkingTime);
+            
+            messages.push({ role: "assistant", content: JSON.stringify(stepData) });
+            
+            if (stepData.next_action === 'final_answer') {
+                const finalStartTime = performance.now();
+                messages.push({
+                    role: "user",
+                    content: "Please provide the final answer based solely on your reasoning above. Do not use JSON formatting. Only provide the text response without any titles or preambles. Retain any formatting as instructed by the original prompt."
+                });
+                
+                const finalAnswer = await makeGroqCall(messages, true);
+                const finalEndTime = performance.now();
+                const finalThinkingTime = (finalEndTime - finalStartTime) / 1000;
+                totalThinkingTime += finalThinkingTime;
+                
+                addFinalAnswerToUI(finalAnswer, finalThinkingTime);
+                break;
+            }
+            
+            currentStepCount++;
+        }
+    } catch (error) {
+        addErrorToUI(error);
+    } finally {
+        isGenerating = false;
+        thinkingContainer.classList.add('hidden');
+        addTotalTimeToUI();
+    }
+}
+
+async function makeGroqCall(messages, isFinalAnswer) {
+    await new Promise(resolve => setTimeout(resolve, 2500));
+    
+    const response = await fetch(GROQ_API_URL, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${GROQ_API_KEY}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            model: "llama-3.2-90b-text-preview",
+            messages: messages,
+            max_tokens: isFinalAnswer ? 1200 : 300,
+            temperature: 0.2,
+            response_format: isFinalAnswer ? undefined : { type: "json_object" }
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error(`API call failed: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return isFinalAnswer ? data.choices[0].message.content : JSON.parse(data.choices[0].message.content);
+}
+
+function addStepToUI(stepData, thinkingTime) {
+    const responseContainer = document.getElementById('responseContainer');
+    const stepElement = document.createElement('div');
+    stepElement.className = 'step-container bg-white rounded-lg shadow-md p-4';
+    
+    stepElement.innerHTML = `
+        <h3 class="step-title text-lg font-semibold mb-2 text-gray-800 flex items-center gap-2">
+            <button onclick="toggleStep(${currentStepCount + 1})" 
+                    id="collapse-button-${currentStepCount + 1}"
+                    class="collapse-button text-gray-400 hover:text-gray-600 focus:outline-none ${allCollapsed ? 'collapsed' : ''}">
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            Step ${currentStepCount + 1}: ${stepData.title}
+        </h3>
+        <div id="step-content-${currentStepCount + 1}" class="step-content text-gray-700 ${allCollapsed ? 'collapsed' : ''}">
+            ${formatContent(stepData.content)}
+            ${stepData.tool ? createToolResultHTML(stepData) : ''}
+            <div class="text-sm text-gray-500 mt-2">
+                <i class="fas fa-clock mr-1"></i>
+                Thinking time: ${thinkingTime.toFixed(2)} seconds
+            </div>
+        </div>
+    `;
+    
+    responseContainer.appendChild(stepElement);
+    stepElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+
+function addFinalAnswerToUI(answer, thinkingTime) {
+    const responseContainer = document.getElementById('responseContainer');
+    const finalElement = document.createElement('div');
+    finalElement.className = 'step-container bg-blue-50 rounded-lg shadow-md p-4 border-2 border-blue-200';
+    
+    finalElement.innerHTML = `
+        <h3 class="text-lg font-semibold mb-2 text-blue-800">
+            <i class="fas fa-flag-checkered mr-2"></i>
+            Final Answer
+        </h3>
+        <div class="text-gray-700">
+            ${formatContent(answer)}
+            <div class="text-sm text-gray-500 mt-2">
+                <i class="fas fa-clock mr-1"></i>
+                Thinking time: ${thinkingTime.toFixed(2)} seconds
+            </div>
+        </div>
+    `;
+    
+    responseContainer.appendChild(finalElement);
+    finalElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+
+function addErrorToUI(error) {
+    const responseContainer = document.getElementById('responseContainer');
+    const errorElement = document.createElement('div');
+    errorElement.className = 'error-message';
+    errorElement.innerHTML = `
+        <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+        Error: ${error.message}
+    `;
+    responseContainer.appendChild(errorElement);
+}
+
+function addTotalTimeToUI() {
+    const responseContainer = document.getElementById('responseContainer');
+    const timeElement = document.createElement('div');
+    timeElement.className = 'text-right text-sm text-gray-500 mt-4';
+    timeElement.innerHTML = `
+        <i class="fas fa-hourglass-end mr-1"></i>
+        Total thinking time: ${totalThinkingTime.toFixed(2)} seconds
+    `;
+    responseContainer.appendChild(timeElement);
+    timeElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+
+function formatContent(content) {
+    if (typeof content !== 'string') return content;
+    
+    content = content.replace(/```(\w*)\n([\s\S]*?)```/g, (match, language, code) => `
+        <div class="bg-gray-100 rounded-lg p-3 my-2 font-mono text-sm">
+            ${language ? `<div class="text-xs text-gray-500 mb-1">${language}</div>` : ''}
+            <pre><code>${escapeHtml(code.trim())}</code></pre>
+        </div>
+    `);
+    
+    content = content.replace(/`([^`]+)`/g, '<code class="bg-gray-100 px-1 rounded">$1</code>');
+    
+    return content.replace(/\n/g, '<br>');
+}
+
+function createToolResultHTML(stepData) {
+    return `
+        <div class="tool-result">
+            <div class="font-semibold">
+                <i class="fas fa-tools mr-1"></i>
+                Tool Used: ${stepData.tool}
+            </div>
+            <div class="text-sm mt-1">Input: ${stepData.tool_input}</div>
+            <div class="text-sm mt-1">Result: ${stepData.tool_result}</div>
+        </div>
+    `;
+}
+
+function escapeHtml(unsafe) {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function handleKeyPress(event) {
+    if (event.key === 'Enter') {
+        generateResponse();
+    }
+}
+
+function toggleAllSteps() {
+    allCollapsed = !allCollapsed;
+    const steps = document.querySelectorAll('.step-content');
+    const buttons = document.querySelectorAll('.collapse-button');
+    
+    steps.forEach(step => {
+        step.classList.toggle('collapsed', allCollapsed);
+    });
+    
+    buttons.forEach(button => {
+        button.classList.toggle('collapsed', allCollapsed);
+    });
+
+    const collapseAllButton = document.getElementById('collapseAllButton');
+    const collapseAllText = document.getElementById('collapseAllText');
+    const icon = collapseAllButton.querySelector('i');
+    
+    if (allCollapsed) {
+        collapseAllText.textContent = 'Expand All';
+        icon.classList.replace('fa-chevron-down', 'fa-chevron-right');
+    } else {
+        collapseAllText.textContent = 'Collapse All';
+        icon.classList.replace('fa-chevron-right', 'fa-chevron-down');
+    }
+}
+
+function toggleStep(stepNumber) {
+    const content = document.querySelector(`#step-content-${stepNumber}`);
+    const button = document.querySelector(`#collapse-button-${stepNumber}`);
+    
+    content.classList.toggle('collapsed');
+    button.classList.toggle('collapsed');
+}
 </script>
-
-
-
