@@ -384,7 +384,7 @@ async function makeGroqCall(messages, isFinalAnswer) {
         body: JSON.stringify({
             model: "llama-3.2-90b-text-preview",
             messages: messages,
-            max_tokens: isFinalAnswer ? 1200 : 300,
+            max_tokens: isFinalAnswer ? 8192: 800,
             temperature: 0.2,
             response_format: isFinalAnswer ? undefined : { type: "json_object" }
         })
